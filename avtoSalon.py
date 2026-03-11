@@ -5,9 +5,19 @@ Car = namedtuple("Car", ["brand", "model", "year", "price", "quentity"])
 
 data = []
 
+
 def add_car():
-    brand = input("Mashina brandi: ")
-    model = input(f"{brand} modeli: ")
+    while True:
+        brand = input("Mashina brandi: ").strip()
+        if brand:
+            break
+        print("Brand bosh bolishi mumkun emas!")
+
+    while True:
+        model = input(f"{brand} modeli: ").strip()
+        if model:
+            break
+        print("Model bosh bolishi mumkun emas!")
 
     while True:
         try:
@@ -54,6 +64,9 @@ def buy_car():
     while True:
         try:
             count = int(input(f"Nechta {brand} {model} sotib olasiz: "))
+            if count <= 0:
+                print("Faqat musbat son kiriting!")
+                continue
             break
         except ValueError:
             print("Faqat raqam kiriting!")
@@ -62,11 +75,28 @@ def buy_car():
         print(f"Bizda faqat {car.quentity} bor\n")
         return
 
+    total_price = count * car.price
+    print(f"{count} ta {brand} {model} Sotib olindi. Jami Tolov {total_price}$\n")
+
+
     new_car = car._replace(quentity=car.quentity - count)
     index = data.index(car)
-    data[index] = new_car
+    if new_car.quentity == 0:
+        data.pop(index)
+    else:   
+        data[index] = new_car
 
-    print(f"{count} ta {brand} {model} sotib olindi\n")
+
+def delete_car():
+    brand = input("ochirmoqchi bolgan mashingaizni brandini kiriting: ")
+    model = input("modelini kiritin: ")
+
+    car = find_in_car(brand, model)
+    if not car:
+        print(f"Bunday {brand} {model} yoq\n")
+        return
+    data.remove(car)
+    print(f"{brand} {model} ochirildi\n")
 
 
 def list_cars():
@@ -92,9 +122,10 @@ def menu():
         print("1. Mashina qo'shish")
         print("2. Mashina sotib olish")
         print("3. Mashinalar ro'yxati")
-        print("4. Chiqish")
+        print("4. Mashina ochirish")
+        print("5. Chiqish")
 
-        tanlash = input("Tanlang (1-4): ")
+        tanlash = input("Tanlang (1-5): ")
 
         if tanlash == "1":
             add_car()
@@ -103,6 +134,8 @@ def menu():
         elif tanlash == "3":
             list_cars()
         elif tanlash == "4":
+            delete_car()
+        elif tanlash == "5":
             print("Dastur tugadi")
             break
         else:
